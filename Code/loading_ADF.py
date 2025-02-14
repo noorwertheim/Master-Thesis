@@ -2,8 +2,14 @@ import mne
 import os
 import matplotlib.pyplot as plt
 
+# Insert file name you want to load
+file_name = 'r10.edf'
+
 # Construct the relative path to the EDF file
-edf_file = os.path.join('Data', 'abdominal-and-direct-fetal-ecg-database-1.0.0', 'r10.edf')
+edf_file = os.path.join('..', 'Data', 'abdominal-and-direct-fetal-ecg-database-1.0.0', file_name)
+
+# Print the path to verify it is correct
+print("Path to EDF file:", edf_file)
 
 # Load the EDF file
 raw = mne.io.read_raw_edf(edf_file, preload=True)
