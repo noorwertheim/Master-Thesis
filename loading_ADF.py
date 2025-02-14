@@ -3,7 +3,7 @@ import os
 import matplotlib.pyplot as plt
 
 # Construct the relative path to the EDF file
-edf_file = os.path.join('Data', 'abdominal-and-direct-fetal-ecg-database-1.0.0', 'r01.edf')
+edf_file = os.path.join('Data', 'abdominal-and-direct-fetal-ecg-database-1.0.0', 'r10.edf')
 
 # Load the EDF file
 raw = mne.io.read_raw_edf(edf_file, preload=True)
