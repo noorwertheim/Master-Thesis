@@ -1,52 +1,64 @@
-import wfdb
+'''Creates a csv file of the ninfea dataset'''
+
 import os
-import matplotlib.pyplot as plt
+import wfdb
+import pandas as pd
+import numpy as np
 
-# Define directories for tpehgt dataset
-data_dir = os.path.join("..", "Data", "ninfea", "wfdb_format_ecg_and_respiration")
-plots_dir = os.path.join("..", "Data", "ninfea", "Plots")
+# Define dataset paths
+data_dir = os.path.join("..", "Master-Thesis-Data", "ninfea", "wfdb_format_ecg_and_respiration")
+csv_path = os.path.join("..", "Master-Thesis-Data", "ninfea", "ninfea_dataset.csv")
 
-# Create Plots directory if it doesn't exist
-os.makedirs(plots_dir, exist_ok=True)
+# Function to store signals as lists
+def format_signal(signal):
+    return list(signal)  # Store signals as lists of numbers
 
-# Get all .dat files in the directory
-file_names = [f[:-4] for f in os.listdir(data_dir) if f.endswith(".dat")]  # Remove .dat extension
+# Initialize list to store records
+data_records = []
 
-# Loop through each file and save plots
-for file_name in file_names:
-    record_path = os.path.join(data_dir, file_name)  # Full path without extension
+# Loop through all records in the dataset
+for filename in os.listdir(data_dir):
+    if filename.endswith(".hea"):  # Process only header files
+        record_name = filename[:-4]  # Remove .hea extension
+        record_path = os.path.join(data_dir, record_name)
 
-    try:
-        # Read the WFDB record
-        record = wfdb.rdrecord(record_path)
+        try:
+            # Load signals and metadata
+            signals, fields = wfdb.rdsamp(record_path)
 
-        # Extract signal data
-        signals = record.p_signal
-        num_signals = signals.shape[1]
-        times = [i / record.fs for i in range(signals.shape[0])]  # Time axis
+            # Extract metadata from header file
+            metadata = {"record_name": record_name}
+            for comment in fields['comments']:
+                key_value = comment.split()
+                if len(key_value) > 1:
+                    key = key_value[0].lower()  # Standardize key names
+                    value = key_value[1]
+                    metadata[key] = value
 
-        # Create plots
-        fig, axes = plt.subplots(num_signals, 1, figsize=(12, 8), sharex=True)
-        fig.suptitle(f"Record: {file_name}", fontsize=14, fontweight="bold")
+            # Convert gestation to a numeric value if available
+            if "gestation" in metadata:
+                try:
+                    gestation = float(metadata["gestation"])
+                    metadata["preterm"] = 1 if gestation < 37 else 0  # Binary classification
+                except ValueError:
+                    metadata["preterm"] = None  # Handle cases where gestation is missing or not a number
 
-        for i in range(num_signals):
-            axes[i].plot(times, signals[:, i])
-            axes[i].set_title(record.sig_name[i])
-            axes[i].set_ylabel("Amplitude")
-            axes[i].grid()
+            # Ensure we capture all signals
+            num_channels = signals.shape[1]
+            for i in range(num_channels):
+                metadata[f"signal_{i+1}"] = format_signal(signals[:, i])
 
-        # Set common x-label
-        axes[-1].set_xlabel("Time (s)")
+            # Store the record
+            data_records.append(metadata)
 
-        plt.tight_layout()
+        except Exception as e:
+            print(f"Error processing {record_name}: {e}")
+            continue  # Skip the file if an error occurs
 
-        # Save the plot
-        plot_filename = f"{file_name}_plot.png"
-        plot_path = os.path.join(plots_dir, plot_filename)
-        plt.savefig(plot_path, dpi=300)  # High-quality PNG
-        plt.close(fig)  # Free memory
+# Convert to DataFrame
+df = pd.DataFrame(data_records)
 
-        print(f"Saved: {plot_path}")  # Print confirmation
-    
-    except Exception as e:
-        print(f"Error processing {file_name}: {e}")
+# Save to CSV
+df.to_csv(csv_path, index=False)
+
+print(f"CSV file saved successfully at: {csv_path}")
