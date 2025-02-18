@@ -1,52 +1,68 @@
-import wfdb
 import os
-import matplotlib.pyplot as plt
+import wfdb
+import pandas as pd
+import numpy as np
 
-# Define directories for tpehgt dataset
-data_dir = os.path.join("..", "Data", "tpehgt")
-plots_dir = os.path.join("..", "Data", "tpehgt", "Plots")
+# Define the dataset path
+data_dir = os.path.join("..", "Master-Thesis-Data", "tpehgt")
+csv_path = os.path.join(data_dir, "tpehgt_dataset.csv")
 
-# Create Plots directory if it doesn't exist
-os.makedirs(plots_dir, exist_ok=True)
+# Function to properly format signals before saving
+def format_signal(signal):
+    return " ".join(map(str, signal))  # Convert NumPy array to space-separated string
 
-# Get all .dat files in the directory
-file_names = [f[:-4] for f in os.listdir(data_dir) if f.endswith(".dat")]  # Remove .dat extension
+# Initialize lists to store data
+data_records = []
+all_metadata_keys = set()  # To collect all possible metadata keys
 
-# Loop through each file and save plots
-for file_name in file_names:
-    record_path = os.path.join(data_dir, file_name)  # Full path without extension
+# Loop through all records in the dataset
+for filename in os.listdir(data_dir):
+    if filename.endswith(".hea"):  # Only process header files
+        record_name = filename[:-4]  # Remove .hea extension
+        record_path = os.path.join(data_dir, record_name)
+        
+        # Load metadata from header file
+        _, fields = wfdb.rdsamp(record_path)
 
-    try:
-        # Read the WFDB record
-        record = wfdb.rdrecord(record_path)
+        # Extract metadata
+        metadata = {"record_name": record_name}
+        for comment in fields['comments']:
+            key_value = comment.split()
+            if len(key_value) > 1:
+                key = key_value[0].lower()  # Make key lowercase for consistency
+                value = key_value[1]
+                metadata[key] = value
+                all_metadata_keys.add(key)  # Collect unique metadata keys
 
-        # Extract signal data
-        signals = record.p_signal
-        num_signals = signals.shape[1]
-        times = [i / record.fs for i in range(signals.shape[0])]  # Time axis
+        # Print metadata for inspection
+        print(f"Metadata for {record_name}: {metadata}")
 
-        # Create plots
-        fig, axes = plt.subplots(num_signals, 1, figsize=(12, 8), sharex=True)
-        fig.suptitle(f"Record: {file_name}", fontsize=14, fontweight="bold")
+        # Load the signal data
+        signals, _ = wfdb.rdsamp(record_path)
 
-        for i in range(num_signals):
-            axes[i].plot(times, signals[:, i])
-            axes[i].set_title(record.sig_name[i])
-            axes[i].set_ylabel("Amplitude")
-            axes[i].grid()
+        # Ensure we have exactly 4 EHG channels
+        if signals.shape[1] >= 4:
+            metadata["signal_1"] = format_signal(signals[:, 0])  # First channel
+            metadata["signal_2"] = format_signal(signals[:, 1])  # Second channel
+            metadata["signal_3"] = format_signal(signals[:, 2])  # Third channel
+            metadata["signal_4"] = format_signal(signals[:, 3])  # Fourth channel
+        else:
+            continue  # Skip if there are not enough channels
 
-        # Set common x-label
-        axes[-1].set_xlabel("Time (s)")
+        # Store the record
+        data_records.append(metadata)
 
-        plt.tight_layout()
+# Print all discovered metadata keys
+print("\nAll metadata keys found across records:")
+print(all_metadata_keys)
 
-        # Save the plot
-        plot_filename = f"{file_name}_plot.png"
-        plot_path = os.path.join(plots_dir, plot_filename)
-        plt.savefig(plot_path, dpi=300)  # High-quality PNG
-        plt.close(fig)  # Free memory
+# Convert to DataFrame
+df = pd.DataFrame(data_records)
 
-        print(f"Saved: {plot_path}")  # Print confirmation
-    
-    except Exception as e:
-        print(f"Error processing {file_name}: {e}")
+# Display first few records
+print(df.head())
+
+# Save to CSV file
+df.to_csv(csv_path, index=False)
+
+print(f"CSV file saved successfully as {csv_path}")
