@@ -1,4 +1,3 @@
-
 import os
 import wfdb
 import pandas as pd
@@ -7,11 +6,11 @@ import numpy as np
 # Define the dataset path
 data_dir = os.path.join("..", "Master-Thesis-Data", "tpehgdb", "tpehgdb")
 
-# Function to properly format signals before saving
+# Function to properly format signals
 def format_signal(signal):
-    return " ".join(map(str, signal))  # Convert NumPy array to space-separated string
+    return list(signal)  # Convert NumPy array to a list (not a string)
 
-# Initialize lists to store data
+# Initialize list to store data
 data_records = []
 
 # Loop through all records in the dataset
@@ -19,11 +18,11 @@ for filename in os.listdir(data_dir):
     if filename.endswith(".hea"):  # Only process header files
         record_name = filename[:-4]  # Remove .hea extension
         record_path = os.path.join(data_dir, record_name)
-        
-        # Load metadata from header file
-        _, fields = wfdb.rdsamp(record_path)
 
-        # Extract gestation time (target label)
+        # Load metadata from header file
+        signals, fields = wfdb.rdsamp(record_path)
+
+        # Extract metadata from header
         metadata = {"record_name": record_name}
         for comment in fields['comments']:
             key_value = comment.split()
@@ -32,12 +31,9 @@ for filename in os.listdir(data_dir):
                 value = key_value[1]
                 metadata[key] = value
 
-        # Convert gestation to a numeric value
-        gestation = float(metadata.get("gestation", 0))
-        metadata["preterm"] = 1 if gestation < 37 else 0  # Binary label (1 = preterm, 0 = full-term)
-
-        # Load the signal data
-        signals, _ = wfdb.rdsamp(record_path)
+        # Convert gestation to a numeric value and create a binary preterm label
+        metadata["gestation"] = float(metadata.get("gestation", 0))
+        metadata["preterm"] = 1 if metadata["gestation"] < 37 else 0  # Binary label (1 = preterm, 0 = full-term)
 
         # Ensure we have exactly 3 EHG channels
         if signals.shape[1] >= 3:
@@ -53,10 +49,8 @@ for filename in os.listdir(data_dir):
 # Convert to DataFrame
 df = pd.DataFrame(data_records)
 
-# Display first few records
-print(df.head())
+# Save to a CSV file with proper formatting
+csv_path = os.path.join("..", "Master-Thesis-Data", "tpehgdb", "tpehgdb_dataset.csv")
+df.to_csv(csv_path, index=False)
 
-# # Save to a CSV file
-# df.to_csv("ehg_dataset.csv", index=False)
-
-# print("CSV file saved successfully as 'ehg_dataset.csv'.")
+print(f"CSV file saved successfully at: {csv_path}")
