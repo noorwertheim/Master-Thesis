@@ -7,10 +7,6 @@ import numpy as np
 data_dir = os.path.join("..", "Master-Thesis-Data", "tpehgt")
 csv_path = os.path.join(data_dir, "tpehgt_dataset.csv")
 
-# Function to properly format signals before saving
-def format_signal(signal):
-    return " ".join(map(str, signal))  # Convert NumPy array to space-separated string
-
 # Initialize lists to store data
 data_records = []
 all_metadata_keys = set()  # To collect all possible metadata keys
@@ -34,18 +30,23 @@ for filename in os.listdir(data_dir):
                 metadata[key] = value
                 all_metadata_keys.add(key)  # Collect unique metadata keys
 
-        # Print metadata for inspection
-        print(f"Metadata for {record_name}: {metadata}")
+        # Convert 'gestation' to float and determine 'preterm' label
+        gestation = metadata.get("gestation", None)
+        try:
+            gestation = float(gestation)
+            metadata["preterm"] = 1 if gestation < 37 else 0
+        except (ValueError, TypeError):
+            metadata["preterm"] = None  # If 'gestation' is missing or not a number
 
         # Load the signal data
         signals, _ = wfdb.rdsamp(record_path)
 
         # Ensure we have exactly 4 EHG channels
         if signals.shape[1] >= 4:
-            metadata["signal_1"] = format_signal(signals[:, 0])  # First channel
-            metadata["signal_2"] = format_signal(signals[:, 1])  # Second channel
-            metadata["signal_3"] = format_signal(signals[:, 2])  # Third channel
-            metadata["signal_4"] = format_signal(signals[:, 3])  # Fourth channel
+            metadata["signal_1"] = signals[:, 0].tolist()  # Store as list
+            metadata["signal_2"] = signals[:, 1].tolist()  
+            metadata["signal_3"] = signals[:, 2].tolist()  
+            metadata["signal_4"] = signals[:, 3].tolist()  
         else:
             continue  # Skip if there are not enough channels
 
