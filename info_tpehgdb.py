@@ -1,63 +1,3 @@
-# import os
-# import wfdb
-# import pandas as pd
-# import numpy as np
-
-# # Define the path to the data directory
-# data_dir = os.path.join("..", "Data", "tpehgdb", "tpehgdb")
-
-# # Choose a record (without file extension)
-# record_name = "tpehg567"  # Change this to the record you want to analyze
-
-# # Full path to the record (without extension)
-# record_path = os.path.join(data_dir, record_name)
-
-# # Load header information
-# record_info = wfdb.rdheader(record_path)
-
-# # Print general information
-# print(f"📂 **Record Name:** {record_info.record_name}")
-# print(f"🕒 **Sampling Frequency:** {record_info.fs} Hz")
-# print(f"📊 **Number of Channels:** {record_info.n_sig}")
-# print(f"📏 **Signal Length:** {record_info.sig_len} samples")
-# print(f"🩺 **Signal Names:** {record_info.sig_name}")
-
-# # Extract metadata from comments
-# print("\n📋 **Metadata in header file:**")
-# preterm_status = None
-# for comment in record_info.comments:
-#     print(f"   - {comment}")
-#     # Check if the comment mentions preterm or full-term
-#     if "preterm" in comment.lower():
-#         preterm_status = "Preterm"
-#     elif "full-term" in comment.lower():
-#         preterm_status = "Full-Term"
-
-# # If no status found, mark as unknown
-# if preterm_status is None:
-#     preterm_status = "Unknown"
-
-# print(f"\n📝 **Birth Outcome:** {preterm_status}")
-
-# # Load the signal data
-# record = wfdb.rdrecord(record_path)
-
-# # Create a time array based on sampling frequency
-# time = np.arange(record.sig_len) / record.fs  # Time in seconds
-
-# # Convert signal data to a pandas DataFrame
-# df = pd.DataFrame(record.p_signal, columns=record.sig_name)
-# df.insert(0, "Time (s)", time)  # Insert time column
-
-# # Display the first few rows of the dataset
-# print("\n🔍 **First few rows of signal data:**")
-# print(df.head())
-
-# # Save to CSV file for machine learning
-# # output_file = f"{record_name}_signals.csv"
-# # df.to_csv(output_file, index=False)
-# # print(f"\n💾 **Saved signal data to:** {output_file}")
-
 
 import os
 import wfdb
@@ -65,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 # Define the path to the data directory
-data_dir = os.path.join("..", "Data", "tpehgdb", "tpehgdb")
+data_dir = os.path.join("..", "Master-Thesis-Data", "tpehgdb", "tpehgdb")
 
 # Choose a record (without file extension)
 record_name = "tpehg584"  # Change this to the record you want to analyze
