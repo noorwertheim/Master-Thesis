@@ -1,5 +1,3 @@
-'''Create csv file of the nifeadb dataset'''
-
 import os
 import wfdb
 import pandas as pd
@@ -23,8 +21,8 @@ for filename in os.listdir(data_dir):
         record_path = os.path.join(data_dir, record_name)
 
         try:
-            # Load metadata from header file
-            _, fields = wfdb.rdsamp(record_path)
+            # Load signal data and metadata
+            signals, fields = wfdb.rdsamp(record_path)
 
             # Extract metadata
             metadata = {"record_name": record_name}
@@ -35,20 +33,19 @@ for filename in os.listdir(data_dir):
                     value = key_value[1]
                     metadata[key] = value
 
-            # Load signal data
-            signals, _ = wfdb.rdsamp(record_path)
+            # Convert 'gestation' to numeric and create 'preterm' label
+            try:
+                gestation = float(metadata.get("gestation", np.nan))
+                metadata["gestation"] = gestation
+                metadata["preterm"] = 1 if gestation < 37 else 0
+            except ValueError:
+                metadata["gestation"] = np.nan
+                metadata["preterm"] = np.nan
 
-            # Store signal data as lists
-            for i in range(min(4, signals.shape[1])):  # Ensure we capture up to 4 channels
+            # Dynamically store all available signal channels
+            num_signals = signals.shape[1]
+            for i in range(num_signals):
                 metadata[f"signal_{i+1}"] = format_signal(signals[:, i])
-
-            # Add a "preterm" feature if "gestation" exists
-            if "gestation" in metadata:
-                try:
-                    gestation = float(metadata["gestation"])
-                    metadata["preterm"] = 1 if gestation < 37 else 0
-                except ValueError:
-                    metadata["preterm"] = None  # Handle cases where gestation is not a valid number
 
             # Store the record
             data_records.append(metadata)
@@ -63,3 +60,4 @@ df = pd.DataFrame(data_records)
 df.to_csv(csv_path, index=False)
 
 print(f"CSV file successfully saved to: {csv_path}")
+print(f"🔹 Number of signal channels detected per recording: {num_signals}")
