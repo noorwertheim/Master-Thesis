@@ -5,6 +5,7 @@ import numpy as np
 
 # Define the dataset path
 data_dir = os.path.join("..", "Master-Thesis-Data", "tpehgdb", "tpehgdb")
+csv_path = os.path.join("..", "Master-Thesis-Data", "tpehgdb", "tpehgdb_dataset.csv")
 
 # Function to properly format signals
 def format_signal(signal):
@@ -31,17 +32,19 @@ for filename in os.listdir(data_dir):
                 value = key_value[1]
                 metadata[key] = value
 
-        # Convert gestation to a numeric value and create a binary preterm label
-        metadata["gestation"] = float(metadata.get("gestation", 0))
-        metadata["preterm"] = 1 if metadata["gestation"] < 37 else 0  # Binary label (1 = preterm, 0 = full-term)
+        # Convert 'gestation' to numeric and assign 'preterm' label
+        try:
+            gestation = float(metadata.get("gestation", np.nan))
+            metadata["gestation"] = gestation
+            metadata["preterm"] = 1 if gestation < 37 else 0
+        except ValueError:
+            metadata["gestation"] = np.nan
+            metadata["preterm"] = np.nan
 
-        # Ensure we have exactly 3 EHG channels
-        if signals.shape[1] >= 3:
-            metadata["signal_1"] = format_signal(signals[:, 0])  # First channel
-            metadata["signal_2"] = format_signal(signals[:, 1])  # Second channel
-            metadata["signal_3"] = format_signal(signals[:, 2])  # Third channel
-        else:
-            continue  # Skip if there are not enough channels
+        # Dynamically handle all available signal channels
+        num_signals = signals.shape[1]
+        for i in range(num_signals):
+            metadata[f"signal_{i+1}"] = format_signal(signals[:, i])
 
         # Store the record
         data_records.append(metadata)
@@ -49,8 +52,8 @@ for filename in os.listdir(data_dir):
 # Convert to DataFrame
 df = pd.DataFrame(data_records)
 
-# Save to a CSV file with proper formatting
-csv_path = os.path.join("..", "Master-Thesis-Data", "tpehgdb", "tpehgdb_dataset.csv")
+# Save to a CSV file
 df.to_csv(csv_path, index=False)
 
 print(f"CSV file saved successfully at: {csv_path}")
+print(f"🔹 Number of signal channels detected per recording: {num_signals}")
