@@ -41,14 +41,12 @@ for filename in os.listdir(data_dir):
         # Load the signal data
         signals, _ = wfdb.rdsamp(record_path)
 
-        # Ensure we have exactly 4 EHG channels
-        if signals.shape[1] >= 4:
-            metadata["signal_1"] = signals[:, 0].tolist()  # Store as list
-            metadata["signal_2"] = signals[:, 1].tolist()  
-            metadata["signal_3"] = signals[:, 2].tolist()  
-            metadata["signal_4"] = signals[:, 3].tolist()  
-        else:
-            continue  # Skip if there are not enough channels
+        # Print the number of available signals for debugging
+        print(f"Record: {record_name}, Total signals found: {signals.shape[1]}")
+
+        # Dynamically extract all available signals
+        for i in range(signals.shape[1]):  # Loop through all channels
+            metadata[f"signal_{i+1}"] = signals[:, i].tolist()
 
         # Store the record
         data_records.append(metadata)
