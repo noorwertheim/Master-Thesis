@@ -1,44 +1,42 @@
 import pandas as pd
+import ast
 import numpy as np
+import os
+import random
 
-# Define the CSV file path
-csv_file = "../Master-Thesis-Data/ehgdb/ehgdb_dataset.csv"
+def print_csv_statistics(csv_file):
+    """Print basic statistics about the CSV file."""
+    df = pd.read_csv(csv_file)
+    
+    print("Basic Statistics of the CSV File:\n")
+    print(f"Number of rows (instances): {df.shape[0]}")
+    print(f"Number of columns (features): {df.shape[1]}")
+    print("\nColumn Names:")
+    for col in df.columns:
+        print(col)
+    
+    print("\nMissing Values Per Column:")
+    print(df.isnull().sum())
+    
+    if "num_signals" in df.columns:
+        print("\nNumber of Unique Signal Counts:")
+        print(df["num_signals"].value_counts())
+    
+    if "sampling_frequency" in df.columns:
+        print("\nSampling Frequency Statistics:")
+        print(df["sampling_frequency"].describe())
+    
+    if "signal_data" in df.columns:
+        print("\nExample Random Segment of Signal Data:")
+        try:
+            df["signal_data"] = df["signal_data"].apply(ast.literal_eval)  # Convert string to list
+            random_row = random.randint(0, len(df) - 1)
+            random_signal = df.loc[random_row, "signal_data"]
+            random_start = random.randint(0, max(0, len(random_signal) - 10))
+            print(random_signal[random_start:random_start + 10])
+        except Exception as e:
+            print(f"Error processing signal data: {e}")
 
-# Load the dataset
-df = pd.read_csv(csv_file)
-
-# Convert signal columns from strings to lists of numbers
-signal_columns = [col for col in df.columns if col.startswith("signal_")]
-for col in signal_columns:
-    df[col] = df[col].apply(lambda x: np.array(eval(x), dtype=float) if isinstance(x, str) else x)
-
-# Print dataset info
-print("\n🔹 Dataset Overview:")
-print(f"Total records: {df.shape[0]}")
-print(f"Total features: {df.shape[1]}")
-
-# Print summary of numerical features
-print("\n🔹 Summary of Numerical Features:")
-print(df.describe(include=[np.number]))
-
-# Print distribution of preterm vs. full-term cases
-if "preterm" in df.columns:
-    print("\n🔹 Distribution of Preterm vs. Full-Term Cases:")
-    print(df["preterm"].value_counts(normalize=True) * 100)
-else:
-    print("\n⚠️ Warning: 'preterm' column not found in dataset.")
-
-# Print basic statistics about signal lengths
-signal_lengths = [len(sig) for sig in df[signal_columns[0]]]  # Assume all signals have the same length
-print("\n🔹 Signal Length Statistics:")
-print(f"Min length: {np.min(signal_lengths)}")
-print(f"Max length: {np.max(signal_lengths)}")
-print(f"Mean length: {np.mean(signal_lengths)}")
-
-# Print a sample record
-print("\n🔹 Sample Record:")
-print(df.iloc[0])
-
-# Print the list of all features
-print("\n🔹 List of Features:")
-print(df.columns.tolist())
+if __name__ == "__main__":
+    csv_file = os.path.join('..', 'Master-Thesis-Data', 'ehgdb', 'ehgdb_database.csv')
+    print_csv_statistics(csv_file)

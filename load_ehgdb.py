@@ -1,64 +1,194 @@
+# import os
+# import pandas as pd
+# import wfdb
+
+# def extract_metadata(header_file):
+#     """Extract metadata from a .hea file."""
+#     record = wfdb.rdheader(header_file)
+#     metadata = {
+#         "record_name": record.record_name,
+#         "num_signals": record.n_sig,
+#         "sampling_frequency": record.fs,
+#         "num_samples": record.sig_len,
+#         "base_date": record.base_date,
+#         "base_time": record.base_time,
+#     }
+    
+#     # Extract additional metadata from the header file
+#     with open(header_file + ".hea", "r") as f:
+#         lines = f.readlines()
+#         metadata_fields = [
+#             "Participant ID", "Record number", "Record type", "Age of participant",
+#             "BMI before pregnancy", "BMI at recording", "Gravidity", "Parity",
+#             "Previous caesarean", "Placental position", "Gestational age at recording",
+#             "Gestational age at delivery", "Mode of delivery", "Synthetic oxytocin use",
+#             "Epidural during labour", "Comments for recording", "Comments for delivery"
+#         ]
+#         for i, field in enumerate(metadata_fields, start=len(lines) - len(metadata_fields)):
+#             metadata[field] = lines[i].strip() if i < len(lines) else None
+    
+#     return metadata
+
+# def extract_annotations(record_path):
+
+
+#     """Extract annotations from .atr files if available."""
+#     try:
+#         ann = wfdb.rdann(record_path, 'atr')
+#         annotations = list(zip(ann.sample.tolist(), ann.symbol))
+#         return annotations
+#     except Exception:
+#         return []
+
+# def process_record(record_path):
+#     """Read signal data, metadata, and annotations from a record."""
+#     try:
+#         signals, fields = wfdb.rdsamp(record_path)
+#         metadata = extract_metadata(record_path)
+#         metadata["signal_data"] = signals.flatten().tolist()  # Flatten for CSV storage
+#         metadata["annotations"] = extract_annotations(record_path)
+#         return metadata
+#     except Exception as e:
+#         print(f"Error processing {record_path}: {e}")
+#         return None
+
+# def main(data_dir, output_csv):
+#     """Process all records in the directory and save to CSV."""
+#     records = [os.path.join(data_dir, f[:-4]) for f in os.listdir(data_dir) if f.endswith(".hea")]
+#     data = []
+    
+#     for record in records:
+#         record_data = process_record(record)
+#         if record_data:
+#             data.append(record_data)
+    
+#     df = pd.DataFrame(data)
+#     df.to_csv(output_csv, index=False)
+#     print(f"Saved to {output_csv}")
+
+# if __name__ == "__main__":
+#     data_dir = os.path.join("..", "Master-Thesis-Data", "ehgdb")
+#     output_csv = "ehgdb_combined.csv"
+#     main(data_dir, output_csv)
+#     print('successfully saved to ehgdb_combined.csv')
+
+# import os
+# import pandas as pd
+# import wfdb
+
+# def extract_metadata(header_file):
+#     """Extract metadata from a .hea file."""
+#     record = wfdb.rdheader(header_file)
+#     metadata = {
+#         "record_name": record.record_name,
+#         "num_signals": record.n_sig,
+#         "sampling_frequency": record.fs,
+#         "num_samples": record.sig_len,
+#         "base_date": record.base_date,
+#         "base_time": record.base_time,
+#     }
+    
+#     # Extract additional metadata from the header file
+#     with open(header_file + ".hea", "r") as f:
+#         lines = f.readlines()
+#         metadata_fields = [
+#             "Participant ID", "Record number", "Record type", "Age of participant",
+#             "BMI before pregnancy", "BMI at recording", "Gravidity", "Parity",
+#             "Previous caesarean", "Placental position", "Gestational age at recording",
+#             "Gestational age at delivery", "Mode of delivery", "Synthetic oxytocin use",
+#             "Epidural during labour", "Comments for recording", "Comments for delivery"
+#         ]
+#         for i, field in enumerate(metadata_fields, start=len(lines) - len(metadata_fields)):
+#             metadata[field] = lines[i].strip() if i < len(lines) else None
+    
+#     return metadata
+
+# def process_record(record_path):
+#     """Read signal data and metadata from a record."""
+#     try:
+#         signals, fields = wfdb.rdsamp(record_path)
+#         metadata = extract_metadata(record_path)
+#         metadata["signal_data"] = signals.flatten().tolist()  # Flatten for CSV storage
+#         return metadata
+#     except Exception as e:
+#         print(f"Error processing {record_path}: {e}")
+#         return None
+
+# def main(data_dir, output_csv):
+#     """Process all records in the directory and save to CSV."""
+#     records = [os.path.join(data_dir, f[:-4]) for f in os.listdir(data_dir) if f.endswith(".hea")]
+#     data = []
+    
+#     for record in records:
+#         record_data = process_record(record)
+#         if record_data:
+#             data.append(record_data)
+    
+#     df = pd.DataFrame(data)
+#     df.to_csv(output_csv, index=False)
+#     print(f"Saved to {output_csv}")
+
+# if __name__ == "__main__":
+#     data_dir = os.path.join("..", "Master-Thesis-Data", "ehgdb")
+#     output_csv = os.path.join(data_dir, "ehgdb_database.csv")
+#     main(data_dir, output_csv)
+#     print('Successfully saved to ehgdb_database.csv')
+
+
 import os
-import wfdb
 import pandas as pd
-import numpy as np
-# import pyedflib
+import wfdb
 
-# Define dataset and output CSV path
-data_dir = os.path.join("..", "Master-Thesis-Data", "ehgdb")
-csv_path = os.path.join(data_dir, "ehgdb_dataset.csv")
-
-# Function to properly format signals as lists
-def format_signal(signal):
-    return signal.tolist()  # Convert NumPy array to a Python list
-
-# Initialize list to store records
-data_records = []
-
-# Loop through all records in the dataset
-for filename in os.listdir(data_dir):
-    if filename.endswith(".hea"):  # Process only header files
-        record_name = filename[:-4]  # Remove .hea extension
-        record_path = os.path.join(data_dir, record_name)
-
-        try:
-            # Load signal data and metadata
-            signals, fields = wfdb.rdsamp(record_path)
-
-            # Extract metadata
-            metadata = {"record_name": record_name}
-            for comment in fields['comments']:
-                key_value = comment.split()
-                if len(key_value) > 1:
-                    key = key_value[0].lower()  # Standardize key names
-                    value = key_value[1]
+def extract_metadata(header_file):
+    """Extract metadata from a .hea file."""
+    record = wfdb.rdheader(header_file)
+    metadata = {
+        "record_name": record.record_name,
+        "num_signals": record.n_sig,
+        "sampling_frequency": record.fs,
+        "num_samples": record.sig_len,
+        "base_date": record.base_date,
+        "base_time": record.base_time,
+    }
+    
+    # Extract metadata from record comments
+    if record.comments:
+        for comment in record.comments:
+            parts = comment.split(":")
+            if len(parts) == 2:
+                key, value = parts[0].strip(), parts[1].strip()
+                if key not in ["Comments for recording", "Synthetic oxytocin use in labour", "Epidural during labour", "Comments for delivery"]:
                     metadata[key] = value
+    
+    return metadata
 
-            # Convert 'gestation' to numeric and create 'preterm' label
-            try:
-                gestation = float(metadata.get("gestation", np.nan))
-                metadata["gestation"] = gestation
-                metadata["preterm"] = 1 if gestation < 37 else 0
-            except ValueError:
-                metadata["gestation"] = np.nan
-                metadata["preterm"] = np.nan
+def process_record(record_path):
+    """Read signal data and metadata from a record."""
+    try:
+        signals, fields = wfdb.rdsamp(record_path)
+        metadata = extract_metadata(record_path)
+        metadata["signal_data"] = signals.flatten().tolist()  # Flatten for CSV storage
+        return metadata
+    except Exception as e:
+        print(f"Error processing {record_path}: {e}")
+        return None
 
-            # Dynamically store all available signal channels
-            num_signals = signals.shape[1]
-            for i in range(num_signals):
-                metadata[f"signal_{i+1}"] = format_signal(signals[:, i])
+def main(data_dir, output_csv):
+    """Process all records in the directory and save to CSV."""
+    records = [os.path.join(data_dir, f[:-4]) for f in os.listdir(data_dir) if f.endswith(".hea")]
+    data = []
+    
+    for record in records:
+        record_data = process_record(record)
+        if record_data:
+            data.append(record_data)
+    
+    df = pd.DataFrame(data)
+    df.to_csv(output_csv, index=False)
+    print(f"Saved to {output_csv}")
 
-            # Store the record
-            data_records.append(metadata)
-
-        except Exception as e:
-            print(f"Skipping record {record_name} due to error: {e}")
-
-# Convert to DataFrame
-df = pd.DataFrame(data_records)
-
-# Save to CSV
-df.to_csv(csv_path, index=False)
-
-print(f"CSV file successfully saved to: {csv_path}")
-print(f"🔹 Number of signal channels detected per recording: {num_signals}")
+if __name__ == "__main__":
+    data_dir = os.path.join("..", "Master-Thesis-Data", "ehgdb")
+    output_csv = os.path.join(data_dir, "ehgdb_database.csv")
+    main(data_dir, output_csv)
+    print('Successfully saved to ehgdb_database.csv')
