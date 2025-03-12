@@ -2,6 +2,7 @@ import scipy.io
 import numpy as np
 import json
 from typing import Dict
+from scipy.signal import butter, filtfilt, sosfiltfilt, decimate
 
 
 class EHGRecord:
@@ -183,3 +184,133 @@ class EHGRecord:
         original_recording_duration = self.sig_len_ehg / (self.fs_ehg * 60)
 
         return original_recording_duration
+
+
+def trim_target(data, dataset_name, sec_to_remove=60):
+    """
+    Trim the first and last `sec_to_remove` seconds from each sequence in the dataset.
+    Returns a new dataset with trimmed signals.
+    """
+    trimmed_data = []
+    
+    for entry in data:
+        sampling_frequency = int(entry['fs'])
+        ts_to_remove = sec_to_remove * sampling_frequency
+        
+        signal = entry['signal']
+        trimmed_signal = signal[ts_to_remove:-ts_to_remove] if 2 * ts_to_remove < len(signal) else signal
+        
+        # Remove specific channels if dataset is 'ninfea'
+
+        trimmed_data.append({
+            'record_name': entry['record_name'],
+            'signal': trimmed_signal,
+            'fs': entry['fs'],
+            'preterm': entry['preterm']
+        })
+    
+    return trimmed_data
+    
+def butter_bandpass_filter(data, lowcut, highcut, fs, order=4):
+    """
+    Apply a Butterworth bandpass filter to the signal.
+    """
+    b, a = butter(order, highcut, 'high', fs=fs)
+    y = filtfilt(b, a, data, axis=0)
+    b, a = butter(order, lowcut, 'low', fs=fs)
+    return filtfilt(b, a, y, axis=0)
+
+def filter_target(data, bandwidth=[0.3, 0.4]):
+    """
+    Filter each channel of the signal within the specified bandwidth.
+    """
+    filtered_data = []
+    
+    for entry in data:
+        signal = entry['signal']
+        fs = entry['fs']
+        
+        # Apply bandpass filter
+        filtered_signal = butter_bandpass_filter(signal, lowcut=bandwidth[0], highcut=bandwidth[1], fs=fs)
+        
+        filtered_data.append({
+            'record_name': entry['record_name'],
+            'signal': filtered_signal,
+            'fs': entry['fs'],
+            'preterm': entry['preterm']
+        })
+    
+    return filtered_data
+
+
+def z_normalize_target(data, epsilon=1e-8):
+    """
+    Apply z-normalization to each channel in the multivariate time series dataset.
+    """
+    normalized_entries = []
+    
+    for entry in data:
+        signal = entry['signal']  # Shape: (sequence_length, num_channels)
+        
+        if signal.ndim == 1:
+            signal = signal[:, np.newaxis]  # Ensure 2D array for consistency
+        
+        # Compute mean and std for each channel separately
+        mu = np.mean(signal, axis=0)
+        sigma = np.std(signal, axis=0)
+        
+        # Normalize each channel
+        normalized_signal = (signal - mu) / (sigma + epsilon)
+        
+        # Store the normalized entry
+        normalized_entries.append({
+            'record_name': entry['record_name'],
+            'signal': normalized_signal,
+            'fs': entry['fs'],
+            'preterm': entry['preterm']
+        })
+    
+    return normalized_entries
+
+
+def check_normalize_target(data, tol=1e-2):
+    """
+    Check if the normalized dataset has mean ~0 and variance ~1 for each channel.
+    """
+    all_correct = True
+    incorrect_entries = []
+    
+    for entry in data:
+        signal = entry['signal']
+        mean_per_channel = np.mean(signal, axis=0)
+        std_per_channel = np.std(signal, axis=0)
+        
+        incorrect = np.where((np.abs(mean_per_channel) >= tol) | (np.abs(std_per_channel - 1) >= tol))[0]
+        if len(incorrect) > 0:
+            all_correct = False
+            incorrect_entries.append((entry['record_name'], incorrect, mean_per_channel[incorrect], std_per_channel[incorrect]))
+    
+    if all_correct:
+        print("Normalization check passed: All channels have mean ≈ 0 and std ≈ 1.")
+    else:
+        print("Normalization check failed: Some channels deviate from expected mean and std.")
+        for record_name, incorrect, means, stds in incorrect_entries:
+            print(f"Record {record_name}: ")
+            for ch, mean, std in zip(incorrect, means, stds):
+                print(f"  Channel {ch}: mean = {mean:.4f}, std = {std:.4f}")
+
+def remove_records(target_data, records_to_remove):
+    """
+    Removes specified records from the target_data variable.
+
+    Parameters:
+    - target_data (numpy.ndarray): The loaded dataset from the .npy file.
+    - records_to_remove (list): List of record names to remove.
+
+    Returns:
+    - numpy.ndarray: A new dataset with the specified records removed.
+    """
+    records_to_remove_set = set(records_to_remove)  # Convert list to set for faster lookup
+    filtered_data = [entry for entry in target_data if entry[0] not in records_to_remove_set]
+
+    return np.array(filtered_data, dtype=object)
