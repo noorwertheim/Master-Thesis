@@ -298,19 +298,23 @@ def check_normalize_target(data, tol=1e-2):
             print(f"Record {record_name}: ")
             for ch, mean, std in zip(incorrect, means, stds):
                 print(f"  Channel {ch}: mean = {mean:.4f}, std = {std:.4f}")
-
+            
 def remove_records(target_data, records_to_remove):
     """
-    Removes specified records from the target_data variable.
+    Removes specified records and entries with 'preterm' as None from the target_data variable.
 
     Parameters:
     - target_data (numpy.ndarray): The loaded dataset from the .npy file.
     - records_to_remove (list): List of record names to remove.
 
     Returns:
-    - numpy.ndarray: A new dataset with the specified records removed.
+    - numpy.ndarray: A new dataset with the specified records and None 'preterm' values removed.
     """
     records_to_remove_set = set(records_to_remove)  # Convert list to set for faster lookup
-    filtered_data = [entry for entry in target_data if entry[0] not in records_to_remove_set]
+
+    filtered_data = [
+        entry for entry in target_data 
+        if entry[0] not in records_to_remove_set and entry['preterm'] is not None
+    ]
 
     return np.array(filtered_data, dtype=object)
