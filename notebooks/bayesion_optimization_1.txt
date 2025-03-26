@@ -1,0 +1,148 @@
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.62
+ - Learning Rate: 0.00004
+ - Batch Size: 64
+ - Number of Layers: 4
+ - Number of Nodes Per Layer: [256, 128, 64, 32]
+
+ - Validation Loss: 1.50639
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.39
+ - Learning Rate: 0.00002
+ - Batch Size: 32
+ - Number of Layers: 3
+ - Number of Nodes Per Layer: [128, 64, 32]
+
+ - Validation Loss: 1.27033
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.19
+ - Learning Rate: 0.00090
+ - Batch Size: 16
+ - Number of Layers: 4
+ - Number of Nodes Per Layer: [256, 128, 64, 32]
+
+ - Validation Loss: 0.51864
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.71
+ - Learning Rate: 0.00001
+ - Batch Size: 64
+ - Number of Layers: 4
+ - Number of Nodes Per Layer: [256, 128, 64, 32]
+
+ - Validation Loss: 1.81970
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.50
+ - Learning Rate: 0.00001
+ - Batch Size: 16
+ - Number of Layers: 4
+ - Number of Nodes Per Layer: [256, 128, 64, 32]
+
+ - Validation Loss: 1.24133
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.36
+ - Learning Rate: 0.00001
+ - Batch Size: 64
+ - Number of Layers: 3
+ - Number of Nodes Per Layer: [128, 64, 32]
+
+ - Validation Loss: 1.75281
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.16
+ - Learning Rate: 0.00072
+ - Batch Size: 32
+ - Number of Layers: 5
+ - Number of Nodes Per Layer: [512, 256, 128, 64, 32]
+
+ - Validation Loss: 0.37875
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.40
+ - Learning Rate: 0.00380
+ - Batch Size: 64
+ - Number of Layers: 3
+ - Number of Nodes Per Layer: [128, 64, 32]
+
+ - Validation Loss: 0.82732
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.11
+ - Learning Rate: 0.00671
+ - Batch Size: 32
+ - Number of Layers: 3
+ - Number of Nodes Per Layer: [128, 64, 32]
+
+ - Validation Loss: 1.78649
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.11
+ - Learning Rate: 0.00005
+ - Batch Size: 16
+ - Number of Layers: 4
+ - Number of Nodes Per Layer: [256, 128, 64, 32]
+
+ - Validation Loss: 0.09482
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.10
+ - Learning Rate: 0.00005
+ - Batch Size: 16
+ - Number of Layers: 4
+ - Number of Nodes Per Layer: [256, 128, 64, 32]
+
+ - Validation Loss: 0.11651
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.14
+ - Learning Rate: 0.00006
+ - Batch Size: 16
+ - Number of Layers: 5
+ - Number of Nodes Per Layer: [512, 256, 128, 64, 32]
+
+ - Validation Loss: 0.09894
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.71
+ - Learning Rate: 0.00016
+ - Batch Size: 16
+ - Number of Layers: 5
+ - Number of Nodes Per Layer: [512, 256, 128, 64, 32]
+
+ - Validation Loss: 0.28727
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.75
+ - Learning Rate: 0.00006
+ - Batch Size: 16
+ - Number of Layers: 2
+ - Number of Nodes Per Layer: [64, 32]
+
+ - Validation Loss: 1.46761
+
+
+Testing Hyperparameter Combination:
+ - Masking Ratio: 0.10
+ - Learning Rate: 0.00014
+ - Batch Size: 16
+ - Number of Layers: 4
+ - Number of Nodes Per Layer: [256, 128, 64, 32]
+
