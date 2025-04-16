@@ -318,3 +318,31 @@ def remove_records(target_data, records_to_remove):
     ]
 
     return np.array(filtered_data, dtype=object)
+
+def z_normalize_signals(data, epsilon=1e-8):
+    """
+    Apply z-normalization to each channel in the multivariate time series dataset.
+    """
+    normalized_entries = []
+    
+    for entry in data:
+        signal = entry['signal']  # Shape: (sequence_length, num_channels)
+        
+        if signal.ndim == 1:
+            signal = signal[:, np.newaxis]  # Ensure 2D array for consistency
+        
+        # Compute mean and std for each channel separately
+        mu = np.mean(signal, axis=0)
+        sigma = np.std(signal, axis=0)
+        
+        # Normalize each channel
+        normalized_signal = (signal - mu) / (sigma + epsilon)
+        
+        # Store the normalized entry
+        normalized_entries.append({
+            'record_name': entry['record_name'],
+            'signal': normalized_signal,
+            'metadata': entry['metadata']
+        })
+    
+    return normalized_entries
