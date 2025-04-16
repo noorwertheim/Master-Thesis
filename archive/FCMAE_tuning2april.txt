@@ -1,0 +1,81 @@
+Learning Rate: 0.002452612631133679, Batch Size: 16, Num Layers: 4, Base Filters: 32, Mask Ratio: 0.456666202282873
+Filters per layer: [32, 64, 128, 256, 128, 64, 32]
+Validation Loss: 0.025660669167576602
+
+Learning Rate: 1.9949166150633936e-05, Batch Size: 32, Num Layers: 3, Base Filters: 8, Mask Ratio: 0.6207107783590824
+Filters per layer: [8, 16, 32, 16, 8]
+Validation Loss: 9.199581905804677e-05
+
+Learning Rate: 1.476504371359436e-05, Batch Size: 64, Num Layers: 5, Base Filters: 8, Mask Ratio: 0.8937692474329743
+Filters per layer: [8, 16, 32, 64, 128, 64, 32, 16, 8]
+Validation Loss: 0.0005822241583816103
+
+Learning Rate: 0.0007119418600172992, Batch Size: 32, Num Layers: 2, Base Filters: 8, Mask Ratio: 0.5198197282067114
+Filters per layer: [8, 16, 8]
+Validation Loss: 4.960403710643473e-06
+
+Learning Rate: 0.00015833718339012065, Batch Size: 16, Num Layers: 5, Base Filters: 8, Mask Ratio: 0.17248514762625666
+Filters per layer: [8, 16, 32, 64, 128, 64, 32, 16, 8]
+Validation Loss: 4.401433911697636e-06
+
+Learning Rate: 0.0007164040428191017, Batch Size: 32, Num Layers: 5, Base Filters: 16, Mask Ratio: 0.7879523253890567
+Filters per layer: [16, 32, 64, 128, 256, 128, 64, 32, 16]
+Validation Loss: 7.622822439212712e-06
+
+Learning Rate: 0.0010988100318524612, Batch Size: 32, Num Layers: 2, Base Filters: 64, Mask Ratio: 0.5506305742764316
+Filters per layer: [64, 128, 64]
+Validation Loss: 3.858488847131902e-06
+
+Learning Rate: 0.000143301094556357, Batch Size: 16, Num Layers: 3, Base Filters: 8, Mask Ratio: 0.6466108150603667
+Filters per layer: [8, 16, 32, 16, 8]
+Validation Loss: 7.584122500273717e-06
+
+Learning Rate: 0.0006760673666959457, Batch Size: 64, Num Layers: 3, Base Filters: 16, Mask Ratio: 0.2457888702304499
+Filters per layer: [16, 32, 64, 32, 16]
+Validation Loss: 6.105662161234519e-06
+
+Learning Rate: 0.001845373292661596, Batch Size: 32, Num Layers: 3, Base Filters: 32, Mask Ratio: 0.12505063396444688
+Filters per layer: [32, 64, 128, 64, 32]
+Validation Loss: 0.0005212575410422327
+
+Learning Rate: 1.1328715209390085e-05, Batch Size: 64, Num Layers: 5, Base Filters: 32, Mask Ratio: 0.8998471787562594
+Filters per layer: [np.int64(32), np.int64(64), np.int64(128), np.int64(256), np.int64(512), np.int64(256), np.int64(128), np.int64(64), np.int64(32)]
+Validation Loss: 1.5561321893522253e-05
+
+Learning Rate: 0.008511442300012325, Batch Size: 32, Num Layers: 4, Base Filters: 16, Mask Ratio: 0.1
+Filters per layer: [np.int64(16), np.int64(32), np.int64(64), np.int64(128), np.int64(64), np.int64(32), np.int64(16)]
+Validation Loss: 10.573322625123254
+
+Learning Rate: 0.0006141431113368053, Batch Size: 16, Num Layers: 5, Base Filters: 16, Mask Ratio: 0.8201277151137663
+Filters per layer: [np.int64(16), np.int64(32), np.int64(64), np.int64(128), np.int64(256), np.int64(128), np.int64(64), np.int64(32), np.int64(16)]
+Validation Loss: 4.744300423121263e-06
+
+Learning Rate: 0.00067003930069899, Batch Size: 32, Num Layers: 5, Base Filters: 16, Mask Ratio: 0.8086435848461739
+Filters per layer: [np.int64(16), np.int64(32), np.int64(64), np.int64(128), np.int64(256), np.int64(128), np.int64(64), np.int64(32), np.int64(16)]
+Validation Loss: 0.0006060910392330285
+
+Learning Rate: 0.0012926157914787855, Batch Size: 64, Num Layers: 5, Base Filters: 16, Mask Ratio: 0.9
+Filters per layer: [np.int64(16), np.int64(32), np.int64(64), np.int64(128), np.int64(256), np.int64(128), np.int64(64), np.int64(32), np.int64(16)]
+Validation Loss: 0.00036350998590523243
+
+Learning Rate: 1e-05, Batch Size: 64, Num Layers: 2, Base Filters: 32, Mask Ratio: 0.1
+Filters per layer: [np.int64(32), np.int64(64), np.int64(32)]
+Validation Loss: 2.2669361087409155e-05
+
+Learning Rate: 0.01, Batch Size: 64, Num Layers: 2, Base Filters: 32, Mask Ratio: 0.4777541160280603
+Filters per layer: [np.int64(32), np.int64(64), np.int64(32)]
+Validation Loss: 0.00021096268312351346
+
+Learning Rate: 0.00015411065764039326, Batch Size: 16, Num Layers: 2, Base Filters: 32, Mask Ratio: 0.1
+Filters per layer: [np.int64(32), np.int64(64), np.int64(32)]
+Validation Loss: 5.622934308725576e-07
+
+Learning Rate: 0.0011816722539366856, Batch Size: 64, Num Layers: 5, Base Filters: 16, Mask Ratio: 0.8959849145933327
+Filters per layer: [np.int64(16), np.int64(32), np.int64(64), np.int64(128), np.int64(256), np.int64(128), np.int64(64), np.int64(32), np.int64(16)]
+Validation Loss: 1.9007095293283118e-05
+
+Learning Rate: 0.0004722787474337914, Batch Size: 16, Num Layers: 5, Base Filters: 32, Mask Ratio: 0.9
+Filters per layer: [np.int64(32), np.int64(64), np.int64(128), np.int64(256), np.int64(512), np.int64(256), np.int64(128), np.int64(64), np.int64(32)]
+Validation Loss: 0.00026407163174186455
+
+Best Hyperparameters: [0.00015411065764039326, np.int64(16), np.int64(2), np.int64(32), 0.1]
