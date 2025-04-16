@@ -1,6 +1,6 @@
 data/**
 models/**
 
-
+token_config.py 
 *.pyc
 **/__pycache__
