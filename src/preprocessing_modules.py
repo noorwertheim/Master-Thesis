@@ -346,3 +346,36 @@ def z_normalize_signals(data, epsilon=1e-8):
         })
     
     return normalized_entries
+
+def create_time_windows_with_labels(data, window_length=12000, step_size=12000):
+    """
+    Create sliding windows of a specified length and step size from a list of signals,
+    along with their associated labels (preterm).
+
+    Args:
+        data: list of dicts, each containing a 'signal' array of shape (seq_len, 1)
+        window_length: number of time steps in each window
+        step_size: number of time steps to move between windows (for overlap)
+
+    Returns:
+        windows: np.ndarray of shape (num_windows, window_length), univariate windows
+        labels: np.ndarray of shape (num_windows,), preterm labels (0 or 1)
+    """
+    windows = []
+    labels = []
+
+    for entry in data:
+        signal = entry['signal'].flatten()  # shape: (seq_len,)
+        label = entry['preterm']  # Preterm label
+        signal_length = len(signal)
+
+        if signal_length < window_length:
+            continue
+
+        for start_idx in range(0, signal_length - window_length + 1, step_size):
+            end_idx = start_idx + window_length
+            window = signal[start_idx:end_idx]
+            windows.append(window)
+            labels.append(label)
+
+    return np.array(windows), np.array(labels)
