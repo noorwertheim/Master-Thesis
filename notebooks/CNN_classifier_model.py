@@ -92,18 +92,17 @@ def train_model(model, train_loader, test_loader, epochs=10, lr=1e-3, device='cu
         avg_train_loss = epoch_train_loss / len(train_loader.dataset)
         train_losses.append(avg_train_loss)
 
-        # print(f"Epoch {epoch+1}/{epochs} | Test Loss (pre-update): {avg_test_loss:.4f} | Train Loss: {avg_train_loss:.4f}")
+        print(f"Epoch {epoch+1}/{epochs} | Test Loss (pre-update): {avg_test_loss:.4f} | Train Loss: {avg_train_loss:.4f}")
 
-    # Plot loss curves
-    # plt.figure(figsize=(8, 5))
-    # plt.plot(train_losses, label="Train Loss", marker='o')
-    # plt.plot(test_losses, label="Test Loss", marker='s')
-    # plt.xlabel("Epoch")
-    # plt.ylabel("Loss")
-    # plt.title("Training and Test Loss per Epoch")
-    # plt.legend()
-    # plt.grid(True)
-    # plt.tight_layout()
-    # plt.show()
+    plt.figure(figsize=(8, 5))
+    plt.plot(train_losses, label="Train Loss", marker='o')
+    plt.plot(test_losses, label="Test Loss", marker='s')
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title("Training and Test Loss per Epoch")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
 
     return model
