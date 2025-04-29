@@ -20,6 +20,7 @@ from collections import Counter
 from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 from sklearn.utils.class_weight import compute_class_weight
+import wandb
 
 class CNNClassifier(nn.Module):
     def __init__(self, input_length=12000, num_layers=3, base_channels=16):
@@ -68,8 +69,9 @@ def train_model(model, train_loader, test_loader, epochs=10, lr=1e-3, device='cu
     )
     
     pos_weight = torch.tensor(class_weights[1] / class_weights[0], dtype=torch.float).to(device)
-    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
-    # criterion = nn.BCEWithLogitsLoss()
+    # criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+    print('running without class weights')
+    criterion = nn.BCEWithLogitsLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, fused=False)
 
     # Lists to store epoch-wise losses
@@ -104,6 +106,7 @@ def train_model(model, train_loader, test_loader, epochs=10, lr=1e-3, device='cu
             loss = criterion(outputs, y_batch)
             loss.backward()
             optimizer.step()
+            wandb.log({"train_loss": loss.item()})
 
             epoch_train_loss += loss.item() * x_batch.size(0)
 
