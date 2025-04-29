@@ -21,6 +21,10 @@ from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 from sklearn.utils.class_weight import compute_class_weight
 import wandb
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score,
+    confusion_matrix, roc_auc_score, average_precision_score, ConfusionMatrixDisplay
+)
 
 class CNNClassifier(nn.Module):
     def __init__(self, input_length=12000, num_layers=3, base_channels=16):
@@ -130,3 +134,53 @@ def train_model(model, train_loader, test_loader, epochs=10, lr=1e-3, device='cu
     plt.show()
 
     return model
+
+
+def evaluate_model(model, test_loader, device='cuda'):
+    device = torch.device(device if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
+    model.eval()
+
+    all_preds = []
+    all_probs = []
+    all_labels = []
+
+    with torch.no_grad():
+        for x_batch, y_batch in test_loader:
+            x_batch = x_batch.unsqueeze(1).to(device)
+            y_batch = y_batch.to(device).unsqueeze(1)
+
+            logits = model(x_batch)
+            probs = torch.sigmoid(logits)
+
+            all_probs.extend(probs.cpu().numpy().flatten())
+            all_preds.extend((probs > 0.5).int().cpu().numpy().flatten())
+            all_labels.extend(y_batch.cpu().numpy().flatten())
+
+    # Convert to NumPy arrays
+    y_true = np.array(all_labels)
+    y_pred = np.array(all_preds)
+    y_score = np.array(all_probs)
+
+    # Compute metrics
+    acc = accuracy_score(y_true, y_pred)
+    prec = precision_score(y_true, y_pred, zero_division=0)
+    rec = recall_score(y_true, y_pred, zero_division=0)
+    f1 = f1_score(y_true, y_pred, zero_division=0)
+    auc = roc_auc_score(y_true, y_score)
+    ap = average_precision_score(y_true, y_score)
+
+    print("\n Evaluation Metrics:")
+    print(f"Accuracy:  {acc:.4f}")
+    print(f"Precision: {prec:.4f}")
+    print(f"Recall:    {rec:.4f}")
+    print(f"F1 Score:  {f1:.4f}")
+    print(f"AUC:       {auc:.4f}")
+    print(f"AP:        {ap:.4f}")
+
+    # Confusion matrix
+    cm = confusion_matrix(y_true, y_pred)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Term", "Preterm"])
+    disp.plot(cmap=plt.cm.Blues)
+    plt.title("Confusion Matrix")
+    plt.show()
