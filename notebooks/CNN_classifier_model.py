@@ -80,19 +80,7 @@ def train_model(model, train_loader, test_loader, epochs=10, lr=1e-3, device='cu
 
     for epoch in range(epochs):
         # === Evaluate on test set BEFORE training ===
-        model.eval()
-        epoch_test_loss = 0.0
-        with torch.no_grad():
-            for x_batch, y_batch in test_loader:
-                x_batch = x_batch.unsqueeze(1).to(device)
-                y_batch = y_batch.to(device).unsqueeze(1)
-
-                outputs = model(x_batch)
-                loss = criterion(outputs, y_batch)
-                epoch_test_loss += loss.item() * x_batch.size(0)
-
-        avg_test_loss = epoch_test_loss / len(test_loader.dataset)
-        test_losses.append(avg_test_loss)
+        
 
         # === Now train ===
         model.train()
@@ -113,7 +101,22 @@ def train_model(model, train_loader, test_loader, epochs=10, lr=1e-3, device='cu
         avg_train_loss = epoch_train_loss / len(train_loader.dataset)
         train_losses.append(avg_train_loss)
 
-        print(f"Epoch {epoch+1}/{epochs} | Test Loss (pre-update): {avg_test_loss:.4f} | Train Loss: {avg_train_loss:.4f}")
+        model.eval()
+        epoch_test_loss = 0.0
+        with torch.no_grad():
+            for x_batch, y_batch in test_loader:
+                x_batch = x_batch.unsqueeze(1).to(device)
+                y_batch = y_batch.to(device).unsqueeze(1)
+
+                outputs = model(x_batch)
+                loss = criterion(outputs, y_batch)
+                wandb.log({"test_loss": loss.item()})
+                epoch_test_loss += loss.item() * x_batch.size(0)
+
+        avg_test_loss = epoch_test_loss / len(test_loader.dataset)
+        test_losses.append(avg_test_loss)
+
+        print(f"Epoch {epoch+1}/{epochs} | Test Loss : {avg_test_loss:.4f} | Train Loss: {avg_train_loss:.4f}")
 
     plt.figure(figsize=(8, 5))
     plt.plot(train_losses, label="Train Loss", marker='o')
