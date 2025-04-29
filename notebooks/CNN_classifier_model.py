@@ -9,7 +9,6 @@ import sys
 sys.path.insert(1, '../src/')
 from config import raw_data_path, univariate_data_path, processed_data_path
 from preprocessing_modules import create_time_windows_with_labels
-from CNN_classifier_model import CNNClassifier, train_model
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
@@ -54,6 +53,8 @@ class CNNClassifier(nn.Module):
 def train_model(model, train_loader, test_loader, epochs=10, lr=1e-3, device='cuda'):
     device = torch.device(device if torch.cuda.is_available() else "cpu")
     model = model.to(device)
+    
+    
 
     # Extract labels to compute class weights
     all_labels = []
