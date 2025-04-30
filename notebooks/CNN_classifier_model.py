@@ -76,8 +76,9 @@ def train_model(model, train_loader, test_loader, epochs=10, lr=1e-3, device='cu
     # criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
     print('running without class weights')
     criterion = nn.BCEWithLogitsLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr, fused=False)
-
+    # optimizer = torch.optim.Adam(model.parameters(), lr=lr, fused=False)
+    print('fuzed is false verwijderd')
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     # Lists to store epoch-wise losses
     train_losses = []
     test_losses = []
