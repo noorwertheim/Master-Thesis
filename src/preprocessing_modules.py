@@ -377,5 +377,58 @@ def create_time_windows_with_labels(data, window_length=12000, step_size=12000):
             window = signal[start_idx:end_idx]
             windows.append(window)
             labels.append(label)
-
+    print('windows', np.array(windows))
+    print('labels', np.array(labels))
     return np.array(windows), np.array(labels)
+
+
+def create_time_windows_with_metadata(data, window_length=12000, step_size=12000):
+    """
+    Create sliding windows of a specified length and step size from a list of signals,
+    along with their associated labels (preterm) and metadata.
+
+    Args:
+        data: list of dicts, each containing a 'signal' array of shape (seq_len, 1)
+        window_length: number of time steps in each window
+        step_size: number of time steps to move between windows
+
+    Returns:
+        windows: np.ndarray of shape (num_windows, window_length)
+        labels: np.ndarray of shape (num_windows,)
+        meta_info: list of dicts with keys: 'record_name', 'channel_id', 'window_index'
+    """
+    windows = []
+    labels = []
+    meta_info = []
+
+    for entry in data:
+        signal = entry['signal'].flatten()
+        label = entry['preterm']
+        record_name = entry['record_name']
+        signal_length = len(signal)
+
+        if signal_length < window_length:
+            continue
+
+        for i, start_idx in enumerate(range(0, signal_length - window_length + 1, step_size)):
+            end_idx = start_idx + window_length
+            window = signal[start_idx:end_idx]
+
+            windows.append(window)
+            labels.append(label)
+
+            # Extract channel from record_name if applicable
+            channel_id = None
+            if "-chan" in record_name:
+                channel_id = record_name.split("-chan")[-1]
+
+            base_id = record_name.split("-chan")[0]
+            meta_info.append({
+                'record_name': record_name,
+                'channel_id': channel_id,
+                'window_index': i,
+                'patient_id': base_id
+            })
+
+
+    return np.array(windows), np.array(labels), meta_info
