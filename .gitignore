@@ -11,3 +11,5 @@ TS2Vec/**
 timesfm/** 
 results/**
 wandb/** 
+**/models/**
+**/wandb/**
