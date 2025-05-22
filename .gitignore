@@ -15,3 +15,5 @@ wandb/**
 **/wandb/**
 notebooks/models/**
 results_21_05_overleaf/**
+notebooks/models_old/**
+notebooks/models_21_05_overleaf/**
